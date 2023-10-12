@@ -12,7 +12,7 @@ pub struct ServicerComponent {
 
 
 pub struct ServicerSystem {
-	MSystem
+	System
 }
 
 pub fn push_message(sys &ServicerSystem, e &SystemMessageData, sender voidptr){

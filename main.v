@@ -14,6 +14,10 @@ pub fn f2(cb fn (x int, y int) int) int {
 	return cb(a, b)+1
 }
 
+struct SystemMessage{
+
+}
+
 
 fn main() {
 	mut ecs := Ecs.new()
@@ -25,7 +29,7 @@ fn main() {
 	ecs.add_system<MoveSystem>()
 	ecs.add_system<InputSystem>()
 	ecs.add_system<ServicerSystem>()
-	//ecs.send<ServicerComponent, SystemMessage>(entity, SystemMessage{})
+	//ecs.send<ServicerComponent>(entity, &SystemMessage{})
 	ecs.update()
 
 }

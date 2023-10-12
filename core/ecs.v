@@ -171,7 +171,7 @@ pub fn (mut self System)destroy() {
 }
 
 pub fn (mut self System)push_message(message voidptr) {
-	
+	//self.messages.push(message)
 }
 
 pub fn (self System)pop_message() voidptr {
@@ -257,11 +257,12 @@ pub struct Ecs {
 		entity_manager EntityManager
 		component_manager ComponentManager
 		system_manager SystemManager
-		event_bus EventBus[EventType] = eventbus.new[EventType]()
+		event_bus EventBus[ComponentType]
 }
 
 pub fn Ecs.new() &Ecs {
 	mut ecs := &Ecs{}
+	ecs.event_bus = eventbus.new[ComponentType]()
 	return ecs
 }
 
@@ -308,11 +309,12 @@ pub fn ( self Ecs) selector() Selector{
 	return Selector{ecs:&self, signature:signature}
 }
 
-pub fn ( self Ecs) send<T, M>(entity Entity, m M) {
-	com := self.get_component<T>(entity)
-
+pub fn ( self Ecs) send<T>(entity Entity, m voidptr) {
+	com_type := self.component_manager.get_component_type<T>()
+	self.event_bus.publish(com_type, self.event_bus, m)
 }
 
 pub fn ( self Ecs) call<T, M>(entity Entity, m M) {
-
+	com_type := self.component_manager.get_component_type<T>()
+	//self.event_bus.publish(com_type, self.event_bus, m)
 }

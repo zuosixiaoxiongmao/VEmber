@@ -1,40 +1,35 @@
 module core
 
-struct Message {
+pub struct SystemMessageData {
 
 }
 
 pub struct ServicerComponent {
 	pub mut:
-		messages []Message
+		messages []SystemMessageData
 }
 
-pub fn (self ServicerComponent)send(entity Entity) {
 
-}
-
-pub fn (self ServicerComponent) call(entity Entity) {
-	
-}
 
 pub struct ServicerSystem {
-	System
+	MSystem
 }
 
-
-pub fn (self ServicerSystem)init() {
-	//self.ecs.add_event_listener()
-}
-
-pub fn (self ServicerSystem)update() {
-	for entity in self.selector().and<ServicerComponent>().query() {
-		println('ServicerSystem update')
+pub fn push_message(sys &ServicerSystem, e &SystemMessageData, sender voidptr){
+	for entity in sys.selector().and<ServicerComponent>().query() {
+		mut com := sys.ecs.get_component<ServicerComponent>(entity)
+		com.messages << e
 	}
 }
 
-pub fn (self ServicerSystem)push_message(message Message) {
+
+pub fn (mut self ServicerSystem)init() {
+	self.ecs.event_bus.subscriber.subscribe_method(1,push_message, &self)
+}
+
+pub fn (mut self ServicerSystem)update() {
 	for entity in self.selector().and<ServicerComponent>().query() {
-		com := self.ecs.get_component<ServicerComponent>(entity)
-		com.messages << Message{}
+		mut com := self.ecs.get_component<ServicerComponent>(entity)
 	}
 }
+

@@ -6,7 +6,7 @@ pub struct MoveSystem {
 	System
 }
 
-pub fn (self MoveSystem)init() {
+pub fn (mut self MoveSystem)init() {
 	//query<>()
 	println('1111111111111')
 	for entity in self.selector().and<Transform>().query() {
@@ -15,7 +15,7 @@ pub fn (self MoveSystem)init() {
 	
 }
 
-pub fn (self MoveSystem)update() {
+pub fn (mut self MoveSystem)update() {
 }
 
 
@@ -24,19 +24,17 @@ pub struct InputSystem {
 	System
 }
 
-pub fn (self InputSystem)init() {
+pub fn (mut self InputSystem)init() {
 	for entity in self.selector().and<InputData>().and<UnitData>().query() {
 	}
 }
 
-pub fn (self InputSystem)update() {
+pub fn (mut self InputSystem)update() {
 	for entity in self.selector().and<InputData>().and<UnitData>().query() {
 		println('InputSystem update')
 		//com := self.ecs.get_component<ServicerComponent>(entity)
 	}
 	for entity in self.selector().and<ServicerComponent>().query() {
-		com := self.ecs.get_component<ServicerComponent>(entity)
-		self.ecs.push_event()
 	}
 }
 

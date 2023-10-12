@@ -1,5 +1,7 @@
 module core
 
+import eventbus {EventBus, EventHandlerFn}
+import datatypes as dt
 
 type Entity = u64
 type ComponentType = u16
@@ -68,8 +70,8 @@ fn (mut self EntityManager) create_entity() Entity {
 	return entity
 }
 
-fn (mut self EntityManager) destroy_entity() {
-	self.signatures.reset()
+fn (mut self EntityManager) destroy_entity(entity Entity) {
+	self.signatures[entity].reset()
 	self.living_entity_count--
 }
 
@@ -144,9 +146,12 @@ fn ( self ComponentManager) get_component_array<T>() &ComponentArray<T> {
 
 pub interface ISystem {
 	ecs &Ecs
-	init()
-	update()
-	destroy()
+	mut:
+		init()
+		update()
+		destroy()
+		push_message(message voidptr)
+		pop_message() voidptr
 }
 
 pub struct System {
@@ -154,20 +159,43 @@ pub struct System {
 		ecs &Ecs
 }
 
-pub fn (self System)init() {
+pub fn (mut self System)init() {
 
 }
 
-pub fn (self System)update() {
+pub fn (mut self System)update() {
 	
 }
 
-pub fn (self System)destroy() {
+pub fn (mut self System)destroy() {
+}
+
+pub fn (mut self System)push_message(message voidptr) {
 	
+}
+
+pub fn (self System)pop_message() voidptr {
+	return voidptr(0)
 }
 
 pub fn (self System)selector() Selector{
 	return self.ecs.selector()
+}
+
+
+pub struct MSystem {
+	System
+	//mut:
+	//	messages dt.Queue[voidptr]
+}
+
+
+pub fn (mut self MSystem)push_message(message voidptr) {
+	//self.messages.push(message)
+}
+
+pub fn (self MSystem)pop_message() voidptr {
+	return voidptr(0)
 }
 
 
@@ -176,8 +204,8 @@ pub struct SystemManager {
 		system_array map[string]ISystem = {}
 }
 
-fn (self SystemManager) update(){
-	for _, sys in self.system_array {
+fn (mut self SystemManager) update(){
+	for _, mut sys in self.system_array {
 		sys.update()
 	}
 }
@@ -221,12 +249,20 @@ pub fn (self Selector) and<T>() Selector  {
 
 ////////////////////////////////////////////////////////////////////////////
 
+type EventType = u64
+
 [heap]
 pub struct Ecs {
 	mut:
 		entity_manager EntityManager
 		component_manager ComponentManager
 		system_manager SystemManager
+		event_bus EventBus[EventType] = eventbus.new[EventType]()
+}
+
+pub fn Ecs.new() &Ecs {
+	mut ecs := &Ecs{}
+	return ecs
 }
 
 pub fn (mut self Ecs) create_entity() Entity {
@@ -234,7 +270,7 @@ pub fn (mut self Ecs) create_entity() Entity {
 }
 
 pub fn (mut self Ecs) destroy_entity(entity Entity) {
-	self.entity_manager.destroy_entity()
+	self.entity_manager.destroy_entity(entity)
 	self.component_manager.entity_destroyed(entity)
 }
 
@@ -263,7 +299,7 @@ pub fn ( self Ecs) remove_system<T>(){
 	self.system_manager.remove_system<T>()
 }
 
-pub fn ( self Ecs) update(){
+pub fn (mut self Ecs) update(){
 	self.system_manager.update()
 }
 
@@ -272,10 +308,11 @@ pub fn ( self Ecs) selector() Selector{
 	return Selector{ecs:&self, signature:signature}
 }
 
-pub fn ( self Ecs) add_event_listener() {
+pub fn ( self Ecs) send<T, M>(entity Entity, m M) {
+	com := self.get_component<T>(entity)
 
 }
 
-pub fn ( self Ecs) send_event() {
+pub fn ( self Ecs) call<T, M>(entity Entity, m M) {
 
 }

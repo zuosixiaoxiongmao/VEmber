@@ -22,3 +22,7 @@ pub struct InputData {
 		rotation Vec3
 		button u64
 }
+
+
+pub struct ConfigComponent {
+}

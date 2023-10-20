@@ -309,9 +309,14 @@ pub fn ( self Ecs) selector() Selector{
 	return Selector{ecs:&self, signature:signature}
 }
 
+pub fn ( self Ecs) publish(com_type ComponentType, m voidptr) {
+	self.event_bus.publish(com_type, self.event_bus, m)
+}
+
 pub fn ( self Ecs) send<T>(entity Entity, m voidptr) {
 	com_type := self.component_manager.get_component_type<T>()
-	self.event_bus.publish(com_type, self.event_bus, m)
+	//self.event_bus.publish(com_type, self.event_bus, m) bug 报错
+	self.publish(com_type, m)
 }
 
 pub fn ( self Ecs) call<T, M>(entity Entity, m M) {

@@ -29,7 +29,6 @@ fn main() {
 	ecs.add_system<MoveSystem>()
 	ecs.add_system<InputSystem>()
 	ecs.add_system<ServicerSystem>()
-	//ecs.send<ServicerComponent>(entity, &SystemMessage{})
+	ecs.send<ServicerComponent>(entity, &SystemMessage{})
 	ecs.update()
-
 }

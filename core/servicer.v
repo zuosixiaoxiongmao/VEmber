@@ -16,6 +16,7 @@ pub struct ServicerSystem {
 }
 
 pub fn push_message(sys &ServicerSystem, e &SystemMessageData, sender voidptr){
+	println("ServicerSystem get message")
 	for entity in sys.selector().and<ServicerComponent>().query() {
 		mut com := sys.ecs.get_component<ServicerComponent>(entity)
 		com.messages << e
@@ -24,7 +25,7 @@ pub fn push_message(sys &ServicerSystem, e &SystemMessageData, sender voidptr){
 
 
 pub fn (mut self ServicerSystem)init() {
-	self.ecs.event_bus.subscriber.subscribe_method(1,push_message, &self)
+	self.ecs.event_bus.subscriber.subscribe_method(self.ecs.component_manager.get_component_type<ServicerComponent>(),push_message, &self)
 }
 
 pub fn (mut self ServicerSystem)update() {

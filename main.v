@@ -1,8 +1,8 @@
 module main
 
-import core {Ecs, ServicerComponent, ServicerSystem, SystemMessageData}
+import ember.core {Ecs, ServicerComponent, ServicerSystem, SystemMessageData}
 
-import app {Transform, UnitData, InputData, MoveSystem, InputSystem}
+import ember.app {Transform, UnitData, InputData, MoveSystem, InputSystem}
 
 pub fn f(x int, y int) int {
 	return 2 * x - y
@@ -20,15 +20,5 @@ struct SystemMessage{
 
 
 fn main() {
-	mut ecs := Ecs.new()
-	entity := ecs.create_entity()
-	ecs.add_component<Transform>(entity)
-	ecs.add_component<UnitData>(entity)
-	ecs.add_component<InputData>(entity)
-	ecs.add_component<ServicerComponent>(entity)
-	ecs.add_system<MoveSystem>()
-	ecs.add_system<InputSystem>()
-	ecs.add_system<ServicerSystem>()
-	ecs.send<ServicerComponent>(entity, &SystemMessage{})
-	ecs.update()
+	
 }

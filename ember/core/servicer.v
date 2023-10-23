@@ -30,7 +30,7 @@ pub fn (mut self ServicerSystem)init() {
 
 pub fn (mut self ServicerSystem)update() {
 	for entity in self.selector().and<ServicerComponent>().query() {
-		mut com := self.ecs.get_component<ServicerComponent>(entity)
+		//mut com := self.ecs.get_component<ServicerComponent>(entity)
 	}
 }
 

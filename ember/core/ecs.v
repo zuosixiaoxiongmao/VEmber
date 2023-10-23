@@ -1,7 +1,6 @@
 module core
 
 import eventbus {EventBus, EventHandlerFn}
-import datatypes as dt
 
 type Entity = u64
 type ComponentType = u16
@@ -232,7 +231,7 @@ struct Selector {
 }
 
 pub fn (self Selector) query() []Entity  {
-	mut entities := []Entity
+	mut entities := []Entity{}
 	for k, s in self.ecs.entity_manager.signatures {
 		if s == self.signature {
 			entities << k
@@ -320,6 +319,6 @@ pub fn ( self Ecs) send<T>(entity Entity, m voidptr) {
 }
 
 pub fn ( self Ecs) call<T, M>(entity Entity, m M) {
-	com_type := self.component_manager.get_component_type<T>()
+	//com_type := self.component_manager.get_component_type<T>()
 	//self.event_bus.publish(com_type, self.event_bus, m)
 }

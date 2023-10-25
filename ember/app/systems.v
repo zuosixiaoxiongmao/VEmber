@@ -1,6 +1,6 @@
 module app
 
-import core {System, ServicerComponent}
+import core {System}
 
 pub struct MoveSystem {
 	System
@@ -34,7 +34,6 @@ pub fn (mut self InputSystem)update() {
 		println('InputSystem update')
 		//com := self.ecs.get_component<ServicerComponent>(entity)
 	}
-	for entity in self.selector().and<ServicerComponent>().query() {
-	}
+
 }
 

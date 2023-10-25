@@ -289,6 +289,10 @@ pub fn (self Ecs) get_component<T>(entity Entity) &T{
 	return self.component_manager.get_component<T>(entity)
 }
 
+pub fn (self Ecs) get_component_type<T>() ComponentType{
+	return self.component_manager.get_component_type<T>()
+}
+
 pub fn (mut self Ecs) add_system<T>(){
 	mut system := self.system_manager.add_system<T>()
 	system.ecs = &self
@@ -310,6 +314,10 @@ pub fn ( self Ecs) selector() Selector{
 
 pub fn ( self Ecs) publish(com_type ComponentType, m voidptr) {
 	self.event_bus.publish(com_type, self.event_bus, m)
+}
+
+pub fn ( mut self Ecs) subscribe_method(com_type ComponentType, handler EventHandlerFn, m voidptr) {
+	self.event_bus.subscriber.subscribe_method(com_type, handler, m)
 }
 
 pub fn ( self Ecs) send<T>(entity Entity, m voidptr) {

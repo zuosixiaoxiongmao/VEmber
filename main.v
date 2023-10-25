@@ -1,24 +1,30 @@
-module main
 
-import ember.core {Ecs, ServicerComponent, ServicerSystem, SystemMessageData}
+import regex
+import ember.utilities {ConfigParser}
+import os
+import v.eval
+import v.pref
+import v.util
+import v.checker
+import v.builder
 
-import ember.app {Transform, UnitData, InputData, MoveSystem, InputSystem}
-
-pub fn f(x int, y int) int {
-	return 2 * x - y
+fn run_regex() {
+	blurb := "rounter_port=7000-8000"
+	query := r'(.)*=(.)*'
+	mut re := regex.regex_opt(query) or { panic(err) }
+	arr := re.find_all_str(blurb)
+	for str in arr {
+		println(str)
+	}
 }
 
-pub fn f2(cb fn (x int, y int) int) int {
-	a := 2
-	b := 3
-	return cb(a, b)+1
-}
-
-struct SystemMessage{
-
-}
 
 
 fn main() {
-	
+	parser := ConfigParser.new()
+	gate_port := parser.get_value<string>('gate_port')
+	println("test config parse : ${gate_port}")
+	mut e := eval.create()
+	//repl_main(mut e)
+	e.run("fn calc(x int, y int) int { return x + y } print(calc(1,2))")!
 }

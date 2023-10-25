@@ -1,13 +1,12 @@
 module utilities
 
+import toml
 import os
 import regex
 
-[heap]
 pub struct ConfigParser {
 	mut:
 		kvalues map[string]string={}
-
 }
 
 pub fn  ConfigParser.new() &ConfigParser {
@@ -16,7 +15,7 @@ pub fn  ConfigParser.new() &ConfigParser {
 	return connfig_parser
 }
 
-fn (mut self ConfigParser) load_file(path string) {
+fn (mut self ConfigParser) load_file1(path string) {
 	content := os.read_file(path) or {
 			return
 	}
@@ -35,9 +34,7 @@ fn (mut self ConfigParser) load_file1(path string) {
 	content := os.read_file(path) or {
 			return
 	}
-	for c in content {
-		println(c)
-	}
+	toml_doc := toml.parse_text(content) or { panic(err) }
 }
 
 pub fn (self ConfigParser) get_value<T>(path string) T {

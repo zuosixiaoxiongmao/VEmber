@@ -2,9 +2,14 @@ module core
 
 import eventbus {EventBus, EventHandlerFn}
 
-type Entity = u64
+pub type Entity = u64
 type ComponentType = u16
 type Signature = BitSet
+
+pub struct Context {
+	pub mut:
+		ecs &Ecs
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,12 +113,13 @@ fn (self ComponentManager) get_component_type<T>() ComponentType {
 	 return 0
 }
 
-fn (mut self ComponentManager) add_component<T>(entity Entity, component T){
+fn (mut self ComponentManager) add_component<T>(entity Entity, component T) &T{
 	if 0 == self.get_component_type<T>() {
 		self.register_component<T>()
 	}
 	mut com_arr := self.get_component_array<T>()
 	com_arr.insert_data(entity, component)
+	return &component
 }
 
 fn (self ComponentManager) remove_component<T>(entity Entity){
@@ -148,9 +154,9 @@ pub interface ISystem {
 	mut:
 		init()
 		update()
-		destroy()
-		push_message(message voidptr)
-		pop_message() voidptr
+		//destroy()
+		//push_message(message voidptr)
+		//pop_message() voidptr
 }
 
 pub struct System {
@@ -248,6 +254,11 @@ pub fn (self Selector) and<T>() Selector  {
 
 ////////////////////////////////////////////////////////////////////////////
 
+pub struct EcsMessage{
+
+}
+
+
 type EventType = u64
 
 [heap]
@@ -257,11 +268,16 @@ pub struct Ecs {
 		component_manager ComponentManager
 		system_manager SystemManager
 		event_bus EventBus[ComponentType]
+		messages map[Entity]EcsMessage ={}
+
+	pub mut:
+		root_entity Entity
 }
 
 pub fn Ecs.new() &Ecs {
 	mut ecs := &Ecs{}
 	ecs.event_bus = eventbus.new[ComponentType]()
+	ecs.root_entity = ecs.create_entity()
 	return ecs
 }
 
@@ -274,11 +290,11 @@ pub fn (mut self Ecs) destroy_entity(entity Entity) {
 	self.component_manager.entity_destroyed(entity)
 }
 
-pub fn (mut self Ecs) add_component<T>(entity Entity){
+pub fn (mut self Ecs) add_component<T>(entity Entity) &T{
 	component_type := self.component_manager.get_component_type<T>()
 	mut signature := self.entity_manager.get_signature(entity)
 	signature.set(component_type)
-	self.component_manager.add_component<T>(entity, T{})
+	return self.component_manager.add_component<T>(entity, T{})
 }
 
 pub fn (self Ecs) remove_component<T>(entity Entity){
@@ -329,4 +345,19 @@ pub fn ( self Ecs) send<T>(entity Entity, m voidptr) {
 pub fn ( self Ecs) call<T, M>(entity Entity, m M) {
 	//com_type := self.component_manager.get_component_type<T>()
 	//self.event_bus.publish(com_type, self.event_bus, m)
+}
+
+pub fn ( self Ecs) send_message<T>(entity Entity, emsg EcsMessage) {
+	com_type := self.component_manager.get_component_type<T>()
+	self.messages[com_type].append(emsg)
+}
+
+pub fn ( self Ecs) get_message<T>(entity Entity, emsg EcsMessage) {
+}
+
+pub fn ( self Ecs) add_object(entity Entity, ref voidptr) {
+	
+}
+
+pub fn ( self Ecs) get_object(entity Entity) {
 }

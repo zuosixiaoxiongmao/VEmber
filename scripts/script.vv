@@ -1,0 +1,14 @@
+import v.eval
+
+struct Wzx {
+	age int
+}
+
+pub fn test_script1( wzx &Wzx){
+	println(wzx)
+}
+
+pub fn test_script( args ...eval.Object ){
+	println("test_script")
+}
+

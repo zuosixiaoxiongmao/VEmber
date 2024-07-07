@@ -4,9 +4,18 @@ import toml
 import os
 import regex
 
+pub struct Config{
+	mut:
+		rounter_port string
+		gate_port string
+		internal_port string
+		external_port string
+}
+
 pub struct ConfigParser {
 	mut:
-		kvalues map[string]string={}
+		config Config
+		toml_doc toml.Doc
 }
 
 pub fn  ConfigParser.new() &ConfigParser {
@@ -30,13 +39,14 @@ fn (mut self ConfigParser) load_file1(path string) {
 	}
 }
 
-fn (mut self ConfigParser) load_file1(path string) {
+fn (mut self ConfigParser) load_file(path string) {
 	content := os.read_file(path) or {
 			return
 	}
-	toml_doc := toml.parse_text(content) or { panic(err) }
-}
-
-pub fn (self ConfigParser) get_value<T>(path string) T {
-	return T(self.kvalues[path])
+	self.toml_doc = toml.parse_text(content) or { panic(err) }
+	self.config = self.toml_doc.reflect[Config]()
 } 
+
+pub fn (self ConfigParser) get_value(key string) toml.Any {
+	return	self.toml_doc.value(key)
+}
